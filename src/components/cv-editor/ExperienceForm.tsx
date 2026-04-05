@@ -1,6 +1,6 @@
 "use client";
 
-import type { CVData, ExperienceItem } from "@/types/cv";
+import { CVData, ExperienceItem } from "@/types/cv";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +28,13 @@ export function ExperienceForm({
         <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest">
           Experiences
         </h3>
-        <Button type="button" size="sm" variant="outline" onClick={addExperience}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={addExperience}
+          className="hover:bg-slate-700 transition-colors duration-150"
+        >
           <Plus size={13} className="mr-1" /> Add
         </Button>
       </div>
@@ -38,7 +44,6 @@ export function ExperienceForm({
           key={exp.id}
           className="rounded-lg border border-slate-700 bg-slate-900 p-4 space-y-3"
         >
-          {/* Controls row */}
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400 font-medium truncate max-w-[180px]">
               {exp.title || "Untitled"}
@@ -48,7 +53,7 @@ export function ExperienceForm({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6"
+                className="h-6 w-6 hover:bg-slate-700 transition-colors duration-150"
                 disabled={index === 0}
                 onClick={() => reorderExperiences(index, index - 1)}
               >
@@ -58,7 +63,7 @@ export function ExperienceForm({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6"
+                className="h-6 w-6 hover:bg-slate-700 transition-colors duration-150"
                 disabled={index === cv.experiences.length - 1}
                 onClick={() => reorderExperiences(index, index + 1)}
               >
@@ -68,7 +73,7 @@ export function ExperienceForm({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-red-400 hover:text-red-300"
+                className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-950/30 transition-colors duration-150"
                 onClick={() => removeExperience(exp.id)}
               >
                 <Trash2 size={12} />
@@ -76,72 +81,69 @@ export function ExperienceForm({
             </div>
           </div>
 
-          <Field label="Period">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-slate-400">Period</Label>
             <Input
               value={exp.period}
               placeholder="Jan 2025 - Apr 2025"
               onChange={(e) => updateExperience(exp.id, "period", e.target.value)}
+              className="cursor-text"
             />
-          </Field>
+          </div>
 
-          <Field label="Title / Role">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-slate-400">Title / Role</Label>
             <Input
               value={exp.title}
               onChange={(e) => updateExperience(exp.id, "title", e.target.value)}
+              className="cursor-text"
             />
-          </Field>
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Company">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-slate-400">Company</Label>
               <Input
                 value={exp.company}
                 onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
+                className="cursor-text"
               />
-            </Field>
-            <Field label="Location">
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-slate-400">Location</Label>
               <Input
                 value={exp.location}
                 onChange={(e) => updateExperience(exp.id, "location", e.target.value)}
+                className="cursor-text"
               />
-            </Field>
+            </div>
           </div>
 
-          <Field label="Description (paragraph)">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-slate-400">Description (paragraph)</Label>
             <Textarea
               rows={3}
               value={exp.description ?? ""}
               onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
-              className="resize-none text-sm"
+              className="resize-none text-sm cursor-text"
               placeholder="Optional paragraph..."
             />
-          </Field>
+          </div>
 
-          <Field label="Bullet points (one per line)">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-slate-400">Bullet points (one per line)</Label>
             <Textarea
               rows={3}
               value={(exp.bullets ?? []).join("\n")}
               onChange={(e) =>
-                updateExperience(
-                  exp.id,
-                  "bullets",
-                  e.target.value.split("\n").filter(Boolean)
-                )
+                updateExperience(exp.id, "bullets", e.target.value.split("\n").filter(Boolean))
               }
-              className="resize-none text-sm font-mono"
+              className="resize-none text-sm font-mono cursor-text"
               placeholder="One bullet per line..."
             />
-          </Field>
+          </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-slate-400">{label}</Label>
-      {children}
     </div>
   );
 }

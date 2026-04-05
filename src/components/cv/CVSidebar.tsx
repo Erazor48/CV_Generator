@@ -1,63 +1,92 @@
-import type { CVData } from "@/types/cv";
+import { CVData } from "@/types/cv";
+import { CVTheme } from "@/types/theme";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa"
 
 interface CVSidebarProps {
   cv: CVData;
+  theme: CVTheme;
 }
 
-export function CVSidebar({ cv }: CVSidebarProps) {
-  const { contact, skills, languages, intro, /*photo, name*/ } = cv;
+export function CVSidebar({ cv, theme }: CVSidebarProps) {
+  const { contact, skills, languages, intro, sectionTitles } = cv;
+
+  const sectionStyle = {
+    borderTopColor: theme.borderColor,
+  };
+
+  const accentBar = {
+    borderLeftColor: theme.accent,
+  };
 
   return (
-    <aside className="w-[38%] flex flex-col bg-[#0f2034] text-white font-sans">
+    <aside
+      className="flex flex-col"
+      style={{
+        backgroundColor: theme.sidebarBg,
+        color: theme.sidebarText,
+        width: "38%",
+        minWidth: "38%",
+      }}
+    >
       {/* ── Intro blurb ── */}
-      <div className="px-7 pt-8 pb-6">
-        <p className="text-sm leading-relaxed italic text-slate-300">{intro}</p>
+      <div className="px-6 pt-7 pb-5">
+        <p
+          className="text-xs leading-relaxed italic"
+          style={{ color: theme.introText }}
+        >
+          {intro}
+        </p>
       </div>
 
-      {/* ── Photo + Name (small screens fold here, but on CV it sits in header) */}
-      {/* Kept as spacer so layout matches the original */}
       <div className="flex-1" />
 
       {/* ── Contact ── */}
-      <section className="px-7 py-5 border-t border-[#1a3a55]">
-        <h3 className="text-base font-bold mb-3 tracking-wide text-white">Contact</h3>
-        <ul className="space-y-2 text-sm text-slate-300">
+      <section
+        className="px-6 py-4 border-t"
+        style={sectionStyle}
+      >
+        <h3
+          className="text-sm font-bold mb-2.5 tracking-wide"
+          style={{ color: theme.sidebarText }}
+        >
+          {sectionTitles.contact}
+        </h3>
+        <ul className="space-y-1.5 text-xs">
           {contact.email && (
             <li className="flex items-center gap-2">
-              <Mail size={13} className="shrink-0 text-slate-400" />
-              <span className="break-all">{contact.email}</span>
+              <Mail size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }} className="break-all">{contact.email}</span>
             </li>
           )}
           {contact.phone && (
             <li className="flex items-center gap-2">
-              <Phone size={13} className="shrink-0 text-slate-400" />
-              <span>{contact.phone}</span>
+              <Phone size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }}>{contact.phone}</span>
             </li>
           )}
           {contact.location && (
             <li className="flex items-center gap-2">
-              <MapPin size={13} className="shrink-0 text-slate-400" />
-              <span>{contact.location}</span>
+              <MapPin size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }}>{contact.location}</span>
             </li>
           )}
           {contact.linkedin && (
             <li className="flex items-center gap-2">
-              <FaLinkedin size={13} className="shrink-0 text-slate-400" />
-              <span className="break-all">{contact.linkedin}</span>
+              <FaLinkedin size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }} className="break-all">{contact.linkedin}</span>
             </li>
           )}
           {contact.github && (
             <li className="flex items-center gap-2">
-              <FaGithub size={13} className="shrink-0 text-slate-400" />
-              <span className="break-all">{contact.github}</span>
+              <FaGithub size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }} className="break-all">{contact.github}</span>
             </li>
           )}
           {contact.portfolio && (
             <li className="flex items-center gap-2">
-              <Globe size={13} className="shrink-0 text-slate-400" />
-              <span className="break-all">{contact.portfolio}</span>
+              <Globe size={11} className="shrink-0" style={{ color: theme.sidebarMuted }} />
+              <span style={{ color: theme.sidebarMuted }} className="break-all">{contact.portfolio}</span>
             </li>
           )}
         </ul>
@@ -65,13 +94,19 @@ export function CVSidebar({ cv }: CVSidebarProps) {
 
       {/* ── Skills ── */}
       {skills.length > 0 && (
-        <section className="px-7 py-5 border-t border-[#1a3a55]">
-          <h3 className="text-base font-bold mb-3 tracking-wide text-white">Skills</h3>
+        <section className="px-6 py-4 border-t" style={sectionStyle}>
+          <h3
+            className="text-sm font-bold mb-2.5 tracking-wide"
+            style={{ color: theme.sidebarText }}
+          >
+            {sectionTitles.skills}
+          </h3>
           <ul className="space-y-1">
             {skills.map((s) => (
               <li
                 key={s.id}
-                className="text-sm text-slate-300 pl-3 border-l-2 border-cyan-500"
+                className="text-xs pl-2.5 border-l-2"
+                style={{ color: theme.sidebarMuted, ...accentBar }}
               >
                 {s.label}
               </li>
@@ -82,13 +117,22 @@ export function CVSidebar({ cv }: CVSidebarProps) {
 
       {/* ── Languages ── */}
       {languages.length > 0 && (
-        <section className="px-7 py-5 border-t border-[#1a3a55]">
-          <h3 className="text-base font-bold mb-3 tracking-wide text-white">Languages</h3>
+        <section className="px-6 py-4 border-t" style={sectionStyle}>
+          <h3
+            className="text-sm font-bold mb-2.5 tracking-wide"
+            style={{ color: theme.sidebarText }}
+          >
+            {sectionTitles.languages}
+          </h3>
           <ul className="space-y-1">
             {languages.map((l) => (
-              <li key={l.id} className="text-sm text-slate-300 pl-3 border-l-2 border-cyan-500">
+              <li
+                key={l.id}
+                className="text-xs pl-2.5 border-l-2"
+                style={{ color: theme.sidebarMuted, ...accentBar }}
+              >
                 {l.name}{" "}
-                <span className="text-slate-400 text-xs">({l.level})</span>
+                <span style={{ color: theme.sidebarMuted, opacity: 0.7 }}>({l.level})</span>
               </li>
             ))}
           </ul>

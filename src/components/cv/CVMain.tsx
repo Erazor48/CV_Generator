@@ -1,50 +1,70 @@
-import type { CVData } from "@/types/cv";
+import { CVData } from "@/types/cv";
+import { CVTheme } from "@/types/theme";
 
 interface CVMainProps {
   cv: CVData;
+  theme: CVTheme;
 }
 
-export function CVMain({ cv }: CVMainProps) {
-  const { experiences, education } = cv;
+export function CVMain({ cv, theme }: CVMainProps) {
+  const { experiences, education, sectionTitles } = cv;
+
+  const headingStyle = {
+    color: theme.sectionHeadingText,
+    borderBottomColor: theme.sectionHeadingBorder,
+  };
 
   return (
-    <main className="flex-1 bg-[#0d1b2a] text-white px-8 py-7 overflow-hidden">
+    <main
+      className="flex-1 px-7 py-6 overflow-hidden"
+      style={{ backgroundColor: theme.mainBg, color: theme.mainText }}
+    >
       {/* ── Experiences ── */}
-      <section className="mb-7">
-        <h2 className="text-lg font-bold tracking-widest mb-4 pb-1 border-b border-cyan-700 text-white">
-          Experiences
+      <section className="mb-6">
+        <h2
+          className="text-base font-bold tracking-widest mb-3 pb-1 border-b"
+          style={headingStyle}
+        >
+          {sectionTitles.experiences}
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {experiences.map((exp) => (
             <div key={exp.id}>
-              {/* Period + title row */}
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-xs font-semibold text-slate-400 whitespace-nowrap">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span
+                  className="text-xs font-semibold whitespace-nowrap"
+                  style={{ color: theme.mainMuted }}
+                >
                   {exp.period}:
                 </span>
-                <span className="text-sm font-bold text-white">{exp.title}</span>
+                <span className="text-xs font-bold" style={{ color: theme.mainText }}>
+                  {exp.title}
+                </span>
                 {exp.company && (
-                  <span className="text-sm text-slate-300">
-                    at {exp.company}
-                    {exp.location ? `, ${exp.location}` : ""}
+                  <span className="text-xs" style={{ color: theme.mainMuted }}>
+                    at {exp.company}{exp.location ? `, ${exp.location}` : ""}
                   </span>
                 )}
               </div>
 
-              {/* Description paragraph */}
               {exp.description && (
-                <p className="mt-1 text-xs leading-relaxed text-slate-300 ml-0">
+                <p
+                  className="mt-0.5 text-xs leading-relaxed"
+                  style={{ color: theme.mainMuted }}
+                >
                   {exp.description}
                 </p>
               )}
 
-              {/* Bullet points */}
               {exp.bullets && exp.bullets.length > 0 && (
-                <ul className="mt-1 ml-3 space-y-0.5">
+                <ul className="mt-0.5 ml-2 space-y-0.5">
                   {exp.bullets.map((b, i) => (
-                    <li key={i} className="flex items-start gap-1.5 text-xs text-slate-300">
-                      <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-400 shrink-0" />
+                    <li key={i} className="flex items-start gap-1.5 text-xs" style={{ color: theme.mainMuted }}>
+                      <span
+                        className="mt-1.5 w-1 h-1 rounded-full shrink-0"
+                        style={{ backgroundColor: theme.mainMuted }}
+                      />
                       {b}
                     </li>
                   ))}
@@ -57,25 +77,32 @@ export function CVMain({ cv }: CVMainProps) {
 
       {/* ── Education ── */}
       <section>
-        <h2 className="text-lg font-bold tracking-widest mb-4 pb-1 border-b border-cyan-700 text-white">
-          Education
+        <h2
+          className="text-base font-bold tracking-widest mb-3 pb-1 border-b"
+          style={headingStyle}
+        >
+          {sectionTitles.education}
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {education.map((ed) => (
             <div key={ed.id}>
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-xs font-semibold text-slate-400 whitespace-nowrap">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span
+                  className="text-xs font-semibold whitespace-nowrap"
+                  style={{ color: theme.mainMuted }}
+                >
                   {ed.period}:
                 </span>
-                <span className="text-sm font-bold text-white">{ed.degree}</span>
-                <span className="text-sm text-slate-300">
-                  at {ed.institution}
-                  {ed.location ? `, ${ed.location}.` : "."}
+                <span className="text-xs font-bold" style={{ color: theme.mainText }}>
+                  {ed.degree}
+                </span>
+                <span className="text-xs" style={{ color: theme.mainMuted }}>
+                  at {ed.institution}{ed.location ? `, ${ed.location}.` : "."}
                 </span>
               </div>
               {ed.description && (
-                <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                <p className="mt-0.5 text-xs leading-relaxed" style={{ color: theme.mainMuted }}>
                   {ed.description}
                 </p>
               )}

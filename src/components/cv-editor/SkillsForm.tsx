@@ -1,9 +1,8 @@
 "use client";
 
-import type { CVData } from "@/types/cv";
+import { CVData } from "@/types/cv";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-//import { Label } from "@/components/ui/label";
 import { Plus, Trash2 } from "lucide-react";
 
 interface SkillsFormProps {
@@ -33,7 +32,13 @@ export function SkillsForm({
           <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest">
             Skills
           </h3>
-          <Button type="button" size="sm" variant="outline" onClick={addSkill}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={addSkill}
+            className="hover:bg-slate-700 transition-colors duration-150"
+          >
             <Plus size={13} className="mr-1" /> Add
           </Button>
         </div>
@@ -45,13 +50,13 @@ export function SkillsForm({
               <Input
                 value={skill.label}
                 onChange={(e) => updateSkill(skill.id, e.target.value)}
-                className="flex-1 h-8 text-sm"
+                className="flex-1 h-8 text-sm cursor-text"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-red-400 hover:text-red-300 shrink-0"
+                className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-950/30 shrink-0 transition-colors duration-150"
                 onClick={() => removeSkill(skill.id)}
               >
                 <Trash2 size={12} />
@@ -67,7 +72,13 @@ export function SkillsForm({
           <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest">
             Languages
           </h3>
-          <Button type="button" size="sm" variant="outline" onClick={addLanguage}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={addLanguage}
+            className="hover:bg-slate-700 transition-colors duration-150"
+          >
             <Plus size={13} className="mr-1" /> Add
           </Button>
         </div>
@@ -80,19 +91,19 @@ export function SkillsForm({
                 value={lang.name}
                 placeholder="Language"
                 onChange={(e) => updateLanguage(lang.id, "name", e.target.value)}
-                className="flex-1 h-8 text-sm"
+                className="flex-1 h-8 text-sm cursor-text"
               />
               <Input
                 value={lang.level}
-                placeholder="Level (B1, Native…)"
+                placeholder="B1, Native…"
                 onChange={(e) => updateLanguage(lang.id, "level", e.target.value)}
-                className="w-28 h-8 text-sm"
+                className="w-24 h-8 text-sm cursor-text"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-red-400 hover:text-red-300 shrink-0"
+                className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-950/30 shrink-0 transition-colors duration-150"
                 onClick={() => removeLanguage(lang.id)}
               >
                 <Trash2 size={12} />

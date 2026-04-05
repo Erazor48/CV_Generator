@@ -15,17 +15,17 @@ export interface Skill {
 export interface Language {
   id: string;
   name: string;
-  level: string; // e.g. "Native", "B1", "A2"
+  level: string;
 }
 
 export interface ExperienceItem {
   id: string;
-  period: string;       // e.g. "Jan 2025 - Apr 2025"
-  title: string;        // e.g. "Clinical Project"
-  company: string;      // e.g. "Aivancity"
-  location: string;     // e.g. "Cachan (94), France"
-  description?: string; // paragraph text
-  bullets?: string[];   // bullet points (optional)
+  period: string;
+  title: string;
+  company: string;
+  location: string;
+  description?: string;
+  bullets?: string[];
 }
 
 export interface EducationItem {
@@ -37,22 +37,28 @@ export interface EducationItem {
   description?: string;
 }
 
+export interface SectionTitles {
+  contact: string;
+  skills: string;
+  languages: string;
+  experiences: string;
+  education: string;
+}
+
+export type CVOrientation = "portrait" | "landscape";
+
 export interface CVData {
-  // Header
   name: string;
-  title: string;        // e.g. "Artificial Intelligence Internship"
-  availability: string; // e.g. "3-4 months → May to August (2026)"
-  photo?: string;       // base64 or URL
-
-  // Intro blurb
+  title: string;
+  availability: string;
+  photo?: string;
   intro: string;
-
-  // Sidebar
   contact: ContactInfo;
   skills: Skill[];
   languages: Language[];
-
-  // Main content
   experiences: ExperienceItem[];
   education: EducationItem[];
+  themeId: string;
+  orientation: CVOrientation;
+  sectionTitles: SectionTitles;
 }

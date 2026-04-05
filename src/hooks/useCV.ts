@@ -1,23 +1,35 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { CVData, ExperienceItem, EducationItem, Skill, Language } from "@/types/cv";
+import { CVData, CVOrientation, ExperienceItem, EducationItem, Skill, Language, SectionTitles } from "@/types/cv";
 import { defaultCV } from "@/data/cv-default";
 
 export function useCV() {
   const [cv, setCV] = useState<CVData>(defaultCV);
 
-  // ── Generic field updater ──────────────────────────────────────────────────
   const updateField = useCallback(<K extends keyof CVData>(key: K, value: CVData[K]) => {
     setCV((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const updateContact = useCallback(
-    (field: keyof CVData["contact"], value: string) => {
-      setCV((prev) => ({ ...prev, contact: { ...prev.contact, [field]: value } }));
-    },
-    []
-  );
+  const updateContact = useCallback((field: keyof CVData["contact"], value: string) => {
+    setCV((prev) => ({ ...prev, contact: { ...prev.contact, [field]: value } }));
+  }, []);
+
+  const updateSectionTitle = useCallback((field: keyof SectionTitles, value: string) => {
+    setCV((prev) => ({ ...prev, sectionTitles: { ...prev.sectionTitles, [field]: value } }));
+  }, []);
+
+  const setSectionTitles = useCallback((titles: SectionTitles) => {
+    setCV((prev) => ({ ...prev, sectionTitles: titles }));
+  }, []);
+
+  const setOrientation = useCallback((orientation: CVOrientation) => {
+    setCV((prev) => ({ ...prev, orientation }));
+  }, []);
+
+  const setTheme = useCallback((themeId: string) => {
+    setCV((prev) => ({ ...prev, themeId }));
+  }, []);
 
   // ── Experiences ────────────────────────────────────────────────────────────
   const addExperience = useCallback(() => {
@@ -35,19 +47,14 @@ export function useCV() {
     (id: string, field: keyof ExperienceItem, value: string | string[]) => {
       setCV((prev) => ({
         ...prev,
-        experiences: prev.experiences.map((e) =>
-          e.id === id ? { ...e, [field]: value } : e
-        ),
+        experiences: prev.experiences.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
       }));
     },
     []
   );
 
   const removeExperience = useCallback((id: string) => {
-    setCV((prev) => ({
-      ...prev,
-      experiences: prev.experiences.filter((e) => e.id !== id),
-    }));
+    setCV((prev) => ({ ...prev, experiences: prev.experiences.filter((e) => e.id !== id) }));
   }, []);
 
   const reorderExperiences = useCallback((from: number, to: number) => {
@@ -71,29 +78,23 @@ export function useCV() {
     setCV((prev) => ({ ...prev, education: [newEd, ...prev.education] }));
   }, []);
 
-  const updateEducation = useCallback(
-    (id: string, field: keyof EducationItem, value: string) => {
-      setCV((prev) => ({
-        ...prev,
-        education: prev.education.map((e) =>
-          e.id === id ? { ...e, [field]: value } : e
-        ),
-      }));
-    },
-    []
-  );
-
-  const removeEducation = useCallback((id: string) => {
+  const updateEducation = useCallback((id: string, field: keyof EducationItem, value: string) => {
     setCV((prev) => ({
       ...prev,
-      education: prev.education.filter((e) => e.id !== id),
+      education: prev.education.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
     }));
+  }, []);
+
+  const removeEducation = useCallback((id: string) => {
+    setCV((prev) => ({ ...prev, education: prev.education.filter((e) => e.id !== id) }));
   }, []);
 
   // ── Skills ─────────────────────────────────────────────────────────────────
   const addSkill = useCallback(() => {
-    const newSkill: Skill = { id: crypto.randomUUID(), label: "New Skill" };
-    setCV((prev) => ({ ...prev, skills: [...prev.skills, newSkill] }));
+    setCV((prev) => ({
+      ...prev,
+      skills: [...prev.skills, { id: crypto.randomUUID(), label: "New Skill" }],
+    }));
   }, []);
 
   const updateSkill = useCallback((id: string, label: string) => {
@@ -109,25 +110,21 @@ export function useCV() {
 
   // ── Languages ─────────────────────────────────────────────────────────────
   const addLanguage = useCallback(() => {
-    const newLang: Language = { id: crypto.randomUUID(), name: "Language", level: "A1" };
-    setCV((prev) => ({ ...prev, languages: [...prev.languages, newLang] }));
-  }, []);
-
-  const updateLanguage = useCallback(
-    (id: string, field: keyof Language, value: string) => {
-      setCV((prev) => ({
-        ...prev,
-        languages: prev.languages.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
-      }));
-    },
-    []
-  );
-
-  const removeLanguage = useCallback((id: string) => {
     setCV((prev) => ({
       ...prev,
-      languages: prev.languages.filter((l) => l.id !== id),
+      languages: [...prev.languages, { id: crypto.randomUUID(), name: "Language", level: "A1" }],
     }));
+  }, []);
+
+  const updateLanguage = useCallback((id: string, field: keyof Language, value: string) => {
+    setCV((prev) => ({
+      ...prev,
+      languages: prev.languages.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
+    }));
+  }, []);
+
+  const removeLanguage = useCallback((id: string) => {
+    setCV((prev) => ({ ...prev, languages: prev.languages.filter((l) => l.id !== id) }));
   }, []);
 
   // ── Photo ─────────────────────────────────────────────────────────────────
@@ -135,33 +132,36 @@ export function useCV() {
     setCV((prev) => ({ ...prev, photo: base64 }));
   }, []);
 
-  // ── Reset ─────────────────────────────────────────────────────────────────
+  // ── Full replace (for JSON load) ──────────────────────────────────────────
+  const loadCV = useCallback((data: CVData) => {
+    setCV(data);
+  }, []);
+
   const resetCV = useCallback(() => setCV(defaultCV), []);
 
   return {
     cv,
     updateField,
     updateContact,
-    // experiences
+    updateSectionTitle,
+    setSectionTitles,
+    setOrientation,
+    setTheme,
     addExperience,
     updateExperience,
     removeExperience,
     reorderExperiences,
-    // education
     addEducation,
     updateEducation,
     removeEducation,
-    // skills
     addSkill,
     updateSkill,
     removeSkill,
-    // languages
     addLanguage,
     updateLanguage,
     removeLanguage,
-    // photo
     setPhoto,
-    // reset
+    loadCV,
     resetCV,
   };
 }

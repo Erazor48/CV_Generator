@@ -4,11 +4,12 @@ import { useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Printer, Download, Upload, RotateCcw } from "lucide-react";
-import type { CVData, ExperienceItem, EducationItem } from "@/types/cv";
+import { CVData, ExperienceItem, EducationItem, SectionTitles } from "@/types/cv";
 import { PersonalForm } from "./PersonalForm";
 import { ExperienceForm } from "./ExperienceForm";
 import { EducationForm } from "./EducationForm";
 import { SkillsForm } from "./SkillsForm";
+import { ThemeForm } from "./ThemeForm";
 import { printCV, saveJSON, loadJSON } from "@/lib/cv-export";
 
 interface CVEditorProps {
@@ -29,11 +30,16 @@ interface CVEditorProps {
   addLanguage: () => void;
   updateLanguage: (id: string, field: "name" | "level", value: string) => void;
   removeLanguage: (id: string) => void;
+  setTheme: (id: string) => void;
+  setOrientation: (o: "portrait" | "landscape") => void;
+  updateSectionTitle: (field: keyof SectionTitles, value: string) => void;
+  setSectionTitles: (titles: SectionTitles) => void;
+  loadCV: (data: CVData) => void;
   resetCV: () => void;
 }
 
 export function CVEditor(props: CVEditorProps) {
-  const { cv, resetCV } = props;
+  const { cv, resetCV, loadCV } = props;
   const jsonInputRef = useRef<HTMLInputElement>(null);
 
   const handleLoadJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,13 +47,8 @@ export function CVEditor(props: CVEditorProps) {
     if (!file) return;
     try {
       const data = (await loadJSON(file)) as CVData;
-      // Minimal validation
       if (!data.name) throw new Error("Invalid CV JSON");
-      props.updateField("name", data.name);
-      // Full reload: reset then apply
-      // For simplicity, reload the page with the new data by re-importing
-      // A more robust approach would be to expose a setCV in the hook
-      window.location.reload(); // simplest for now – replace with setCV if exposed
+      loadCV(data);
     } catch {
       alert("Could not load the JSON file. Make sure it was exported from this tool.");
     }
@@ -61,8 +62,8 @@ export function CVEditor(props: CVEditorProps) {
         <Button
           type="button"
           size="sm"
-          className="bg-cyan-600 hover:bg-cyan-500 text-white"
-          onClick={() => printCV("cv-preview-root")}
+          className="bg-cyan-600 hover:bg-cyan-500 text-white transition-colors duration-150"
+          onClick={() => printCV("cv-preview-root", cv.orientation)}
         >
           <Printer size={13} className="mr-1.5" /> Print / PDF
         </Button>
@@ -71,6 +72,7 @@ export function CVEditor(props: CVEditorProps) {
           type="button"
           size="sm"
           variant="outline"
+          className="hover:bg-slate-700 transition-colors duration-150"
           onClick={() => saveJSON(cv, `cv-${cv.name.replace(/\s+/g, "-").toLowerCase()}.json`)}
         >
           <Download size={13} className="mr-1.5" /> Save JSON
@@ -80,6 +82,7 @@ export function CVEditor(props: CVEditorProps) {
           type="button"
           size="sm"
           variant="outline"
+          className="hover:bg-slate-700 transition-colors duration-150"
           onClick={() => jsonInputRef.current?.click()}
         >
           <Upload size={13} className="mr-1.5" /> Load JSON
@@ -96,7 +99,7 @@ export function CVEditor(props: CVEditorProps) {
           type="button"
           size="sm"
           variant="ghost"
-          className="text-slate-400 hover:text-red-400 ml-auto"
+          className="text-slate-400 hover:text-red-400 hover:bg-red-950/20 ml-auto transition-colors duration-150"
           onClick={() => {
             if (confirm("Reset to default CV? All changes will be lost.")) resetCV();
           }}
@@ -107,14 +110,15 @@ export function CVEditor(props: CVEditorProps) {
 
       {/* ── Tabs ── */}
       <Tabs defaultValue="personal" className="flex flex-col flex-1 overflow-hidden">
-        <TabsList className="shrink-0 mx-4 mt-3 mb-0 grid grid-cols-4 bg-slate-800/50">
-          <TabsTrigger value="personal" className="text-xs">Me</TabsTrigger>
-          <TabsTrigger value="experience" className="text-xs">Exp.</TabsTrigger>
-          <TabsTrigger value="education" className="text-xs">Edu.</TabsTrigger>
-          <TabsTrigger value="skills" className="text-xs">Skills</TabsTrigger>
+        <TabsList className="shrink-0 mx-4 mt-3 mb-0 grid grid-cols-5 bg-slate-800/50">
+          <TabsTrigger value="personal"  className="text-xs cursor-pointer">Me</TabsTrigger>
+          <TabsTrigger value="experience" className="text-xs cursor-pointer">Exp.</TabsTrigger>
+          <TabsTrigger value="education" className="text-xs cursor-pointer">Edu.</TabsTrigger>
+          <TabsTrigger value="skills"    className="text-xs cursor-pointer">Skills</TabsTrigger>
+          <TabsTrigger value="style"     className="text-xs cursor-pointer">Style</TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           <TabsContent value="personal" className="mt-0">
             <PersonalForm
               cv={cv}
@@ -152,6 +156,16 @@ export function CVEditor(props: CVEditorProps) {
               addLanguage={props.addLanguage}
               updateLanguage={props.updateLanguage}
               removeLanguage={props.removeLanguage}
+            />
+          </TabsContent>
+
+          <TabsContent value="style" className="mt-0">
+            <ThemeForm
+              cv={cv}
+              setTheme={props.setTheme}
+              setOrientation={props.setOrientation}
+              updateSectionTitle={props.updateSectionTitle}
+              setSectionTitles={props.setSectionTitles}
             />
           </TabsContent>
         </div>
