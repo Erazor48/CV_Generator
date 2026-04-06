@@ -37,10 +37,12 @@ interface CVEditorProps {
   setSectionTitles: (titles: SectionTitles) => void;
   loadCV: (data: CVData) => void;
   resetCV: () => void;
+  projectName: string;
 }
 
 export function CVEditor(props: CVEditorProps) {
-  const { cv, resetCV, loadCV } = props;
+  const { cv, resetCV, loadCV, projectName } = props;
+  const slug = projectName.replace(/\s+/g, "-").toLowerCase();
   const jsonInputRef = useRef<HTMLInputElement>(null);
 
   const handleLoadJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +65,7 @@ export function CVEditor(props: CVEditorProps) {
         <Button type="button" size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white transition-colors duration-150" onClick={() => printCV("cv-preview-root", cv.orientation)}>
           <Printer size={13} className="mr-1.5" /> Print / PDF
         </Button>
-        <Button type="button" size="sm" variant="outline" className="hover:bg-slate-700 transition-colors duration-150" onClick={() => saveJSON(cv, `cv-${cv.name.replace(/\s+/g, "-").toLowerCase()}.json`)}>
+        <Button type="button" size="sm" variant="outline" className="hover:bg-slate-700 transition-colors duration-150" onClick={() => saveJSON(cv, `${slug}.json`)}>
           <Download size={13} className="mr-1.5" /> Save JSON
         </Button>
         <Button type="button" size="sm" variant="outline" className="hover:bg-slate-700 transition-colors duration-150" onClick={() => jsonInputRef.current?.click()}>
