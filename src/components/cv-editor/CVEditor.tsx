@@ -18,7 +18,7 @@ interface CVEditorProps {
   updateContact: (field: keyof CVData["contact"], value: string) => void;
   setPhoto: (base64: string | undefined) => void;
   addExperience: () => void;
-  updateExperience: (id: string, field: keyof ExperienceItem, value: string | string[]) => void;
+  updateExperience: (id: string, field: keyof ExperienceItem, value: string) => void;
   removeExperience: (id: string) => void;
   reorderExperiences: (from: number, to: number) => void;
   addEducation: () => void;

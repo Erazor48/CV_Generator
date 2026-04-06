@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { CVData, CVOrientation, ExperienceItem, EducationItem, Skill, Language, SectionTitles } from "@/types/cv";
+import {
+  CVData, CVOrientation,
+  ExperienceItem, EducationItem,
+  Skill, Language, SectionTitles,
+} from "@/types/cv";
 import { defaultCV } from "@/data/cv-default";
 
 export function useCV() {
@@ -39,12 +43,13 @@ export function useCV() {
       title: "New Experience",
       company: "",
       location: "",
+      description: "",
     };
     setCV((prev) => ({ ...prev, experiences: [newExp, ...prev.experiences] }));
   }, []);
 
   const updateExperience = useCallback(
-    (id: string, field: keyof ExperienceItem, value: string | string[]) => {
+    (id: string, field: keyof ExperienceItem, value: string) => {
       setCV((prev) => ({
         ...prev,
         experiences: prev.experiences.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
@@ -74,6 +79,7 @@ export function useCV() {
       degree: "New Degree",
       institution: "",
       location: "",
+      description: "",
     };
     setCV((prev) => ({ ...prev, education: [newEd, ...prev.education] }));
   }, []);

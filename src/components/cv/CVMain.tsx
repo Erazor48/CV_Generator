@@ -1,5 +1,6 @@
 import { CVData } from "@/types/cv";
 import { CVTheme } from "@/types/theme";
+import { renderDescription } from "@/lib/render-description";
 
 interface CVMainProps {
   cv: CVData;
@@ -12,6 +13,12 @@ export function CVMain({ cv, theme }: CVMainProps) {
   const headingStyle = {
     color: theme.sectionHeadingText,
     borderBottomColor: theme.sectionHeadingBorder,
+  };
+
+  const descStyles = {
+    textColor: theme.mainMuted,
+    bulletColor: theme.mainMuted,
+    fontSize: "0.7rem",
   };
 
   return (
@@ -43,33 +50,13 @@ export function CVMain({ cv, theme }: CVMainProps) {
                 </span>
                 {exp.company && (
                   <span className="text-xs" style={{ color: theme.mainMuted }}>
-                    at {exp.company}{exp.location ? `, ${exp.location}` : ""}
+                    at {exp.company}
+                    {exp.location ? `, ${exp.location}` : ""}
                   </span>
                 )}
               </div>
 
-              {exp.description && (
-                <p
-                  className="mt-0.5 text-xs leading-relaxed"
-                  style={{ color: theme.mainMuted }}
-                >
-                  {exp.description}
-                </p>
-              )}
-
-              {exp.bullets && exp.bullets.length > 0 && (
-                <ul className="mt-0.5 ml-2 space-y-0.5">
-                  {exp.bullets.map((b, i) => (
-                    <li key={i} className="flex items-start gap-1.5 text-xs" style={{ color: theme.mainMuted }}>
-                      <span
-                        className="mt-1.5 w-1 h-1 rounded-full shrink-0"
-                        style={{ backgroundColor: theme.mainMuted }}
-                      />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {renderDescription(exp.description, descStyles)}
             </div>
           ))}
         </div>
@@ -98,14 +85,12 @@ export function CVMain({ cv, theme }: CVMainProps) {
                   {ed.degree}
                 </span>
                 <span className="text-xs" style={{ color: theme.mainMuted }}>
-                  at {ed.institution}{ed.location ? `, ${ed.location}.` : "."}
+                  at {ed.institution}
+                  {ed.location ? `, ${ed.location}.` : "."}
                 </span>
               </div>
-              {ed.description && (
-                <p className="mt-0.5 text-xs leading-relaxed" style={{ color: theme.mainMuted }}>
-                  {ed.description}
-                </p>
-              )}
+
+              {renderDescription(ed.description, descStyles)}
             </div>
           ))}
         </div>

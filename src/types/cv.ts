@@ -24,8 +24,8 @@ export interface ExperienceItem {
   title: string;
   company: string;
   location: string;
+  /** Lines starting with "- " will be rendered as bullet points in the preview */
   description?: string;
-  bullets?: string[];
 }
 
 export interface EducationItem {
@@ -34,6 +34,7 @@ export interface EducationItem {
   degree: string;
   institution: string;
   location: string;
+  /** Lines starting with "- " will be rendered as bullet points in the preview */
   description?: string;
 }
 
