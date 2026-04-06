@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useCVProjects } from "@/hooks/useCVProjects";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv-editor/CVEditor";
@@ -12,7 +13,8 @@ export default function CVGeneratorPage() {
   const theme = getThemeById(cv.themeId);
   const scale = cv.orientation === "portrait" ? 0.72 : 0.58;
 
-  // Don't render until localStorage is loaded — prevents SSR/CSR hydration mismatch
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   if (!hydrated) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#070f18]">
@@ -24,23 +26,31 @@ export default function CVGeneratorPage() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#070f18]">
 
-      {/* ── Projects panel ── */}
-      <div className="w-[180px] shrink-0 h-full">
-        <ProjectPanel
-          projects={projects}
-          activeId={activeId}
-          onSwitch={store.switchProject}
-          onCreate={() => store.createProject()}
-          onDuplicate={store.duplicateProject}
-          onRename={store.renameProject}
-          onDelete={store.deleteProject}
-        />
+      {/* ── Projects panel — animated width toggle ── */}
+      <div
+        className="shrink-0 h-full overflow-hidden transition-all duration-200 ease-in-out"
+        style={{ width: sidebarOpen ? 180 : 0 }}
+      >
+        <div className="w-[180px] h-full">
+          <ProjectPanel
+            projects={projects}
+            activeId={activeId}
+            onSwitch={store.switchProject}
+            onCreate={() => store.createProject()}
+            onDuplicate={store.duplicateProject}
+            onRename={store.renameProject}
+            onDelete={store.deleteProject}
+            onClose={() => setSidebarOpen(false)}
+          />
+        </div>
       </div>
 
       {/* ── Editor panel ── */}
       <div className="w-[360px] shrink-0 h-full overflow-hidden flex flex-col">
         <CVEditor
           cv={cv}
+          sidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen((v) => !v)}
           updateField={store.updateField}
           updateContact={store.updateContact}
           setPhoto={store.setPhoto}

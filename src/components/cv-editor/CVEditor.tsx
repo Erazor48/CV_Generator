@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Upload, RotateCcw } from "lucide-react";
+import { Printer, Download, Upload, RotateCcw, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { CVData, ExperienceItem, EducationItem, SectionTitles } from "@/types/cv";
 import { PersonalForm } from "./PersonalForm";
 import { ExperienceForm } from "./ExperienceForm";
@@ -12,8 +12,11 @@ import { SkillsForm } from "./SkillsForm";
 import { ThemeForm } from "./ThemeForm";
 import { printCV, saveJSON, loadJSON } from "@/lib/cv-export";
 
+
 interface CVEditorProps {
   cv: CVData;
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
   updateField: <K extends keyof CVData>(key: K, value: CVData[K]) => void;
   updateContact: (field: keyof CVData["contact"], value: string) => void;
   setPhoto: (base64: string | undefined) => void;
@@ -41,7 +44,7 @@ interface CVEditorProps {
 }
 
 export function CVEditor(props: CVEditorProps) {
-  const { cv, resetCV, loadCV, projectName } = props;
+  const { cv, resetCV, loadCV, projectName, sidebarOpen, onToggleSidebar } = props;
   const slug = projectName.replace(/\s+/g, "-").toLowerCase();
   const jsonInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,34 +53,79 @@ export function CVEditor(props: CVEditorProps) {
     if (!file) return;
     try {
       const data = (await loadJSON(file)) as CVData;
-      if (!data.name) throw new Error("Invalid CV JSON");
+      if (!data.name) throw new Error("Invalid");
       loadCV(data);
     } catch {
-      alert("Could not load the JSON file. Make sure it was exported from this tool.");
+      alert("Fichier JSON invalide. Assure-toi qu'il a été exporté depuis cet outil.");
     }
     e.target.value = "";
   };
 
   return (
     <div className="flex flex-col h-full bg-[#0f1e2e] border-r border-slate-800">
+
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-slate-800 bg-[#0d1b2a]">
-        <Button type="button" size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white transition-colors duration-150" onClick={() => printCV("cv-preview-root", cv.orientation)}>
-          <Printer size={13} className="mr-1.5" /> Print / PDF
+      <div className="flex flex-wrap items-center gap-1.5 px-3 py-2.5 border-b border-slate-800 bg-[#0d1b2a]">
+
+        {/* Sidebar toggle */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          title={sidebarOpen ? "Masquer les projets" : "Afficher les projets"}
+          className="cursor-pointer w-7 h-7 flex items-center justify-center rounded text-slate-500 hover:text-slate-200 hover:bg-slate-700 transition-colors duration-150 mr-0.5"
+        >
+          {sidebarOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
+        </button>
+
+        <div className="w-px h-4 bg-slate-700 shrink-0" />
+
+        {/* Print */}
+        <Button
+          type="button"
+          size="sm"
+          className="h-7 px-2.5 text-xs bg-cyan-600 hover:bg-cyan-500 text-white transition-colors duration-150"
+          onClick={() => void printCV("cv-preview-root", cv.orientation)}
+        >
+          <Printer size={12} className="mr-1" /> PDF
         </Button>
-        <Button type="button" size="sm" variant="outline" className="hover:bg-slate-700 transition-colors duration-150" onClick={() => saveJSON(cv, `${slug}.json`)}>
-          <Download size={13} className="mr-1.5" /> Save JSON
+
+        {/* Save JSON */}
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-7 px-2.5 text-xs hover:bg-slate-700 transition-colors duration-150"
+          onClick={() => saveJSON(cv, `${slug}.json`)}
+        >
+          <Download size={12} className="mr-1" /> JSON
         </Button>
-        <Button type="button" size="sm" variant="outline" className="hover:bg-slate-700 transition-colors duration-150" onClick={() => jsonInputRef.current?.click()}>
-          <Upload size={13} className="mr-1.5" /> Load JSON
+
+        {/* Load JSON */}
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-7 px-2.5 text-xs hover:bg-slate-700 transition-colors duration-150"
+          onClick={() => jsonInputRef.current?.click()}
+        >
+          <Upload size={12} />
         </Button>
         <input ref={jsonInputRef} type="file" accept=".json" className="hidden" onChange={handleLoadJSON} />
-        <Button type="button" size="sm" variant="ghost" className="text-slate-400 hover:text-red-400 hover:bg-red-950/20 ml-auto transition-colors duration-150" onClick={() => { if (confirm("Reset to default CV? All changes will be lost.")) resetCV(); }}>
-          <RotateCcw size={13} className="mr-1.5" /> Reset
+
+        {/* Reset */}
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="h-7 w-7 p-0 text-slate-500 hover:text-red-400 hover:bg-red-950/20 ml-auto transition-colors duration-150"
+          title="Réinitialiser le CV"
+          onClick={() => { if (confirm("Réinitialiser ce CV ? Toutes les modifications seront perdues.")) resetCV(); }}
+        >
+          <RotateCcw size={12} />
         </Button>
       </div>
 
-      {/* ── 5 tabs ── */}
+      {/* ── Tabs ── */}
       <Tabs defaultValue="personal" className="flex flex-col flex-1 overflow-hidden">
         <TabsList className="shrink-0 mx-4 mt-3 mb-0 grid grid-cols-5 bg-slate-800/50">
           <TabsTrigger value="personal"   className="text-xs cursor-pointer">Me</TabsTrigger>
