@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pencil, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Pencil, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 
 interface EducationFormProps {
   cv: CVData;
   addEducation: () => void;
   updateEducation: (id: string, field: keyof EducationItem, value: string) => void;
   removeEducation: (id: string) => void;
+  reorderEducation: (from: number, to: number) => void;
 }
 
 export function EducationForm({
@@ -20,6 +21,7 @@ export function EducationForm({
   addEducation,
   updateEducation,
   removeEducation,
+  reorderEducation,
 }: EducationFormProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
     () => Object.fromEntries(cv.education.map((e) => [e.id, true]))
@@ -45,7 +47,7 @@ export function EducationForm({
         </Button>
       </div>
 
-      {cv.education.map((ed) => {
+      {cv.education.map((ed, index) => {
         const isOpen = expanded[ed.id] ?? true;
 
         return (
@@ -75,16 +77,41 @@ export function EducationForm({
                 <Pencil size={10} className="shrink-0 text-slate-600 group-hover:text-slate-400 transition-colors duration-150" />
               </button>
 
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-950/30 transition-colors duration-150 shrink-0"
-                onClick={() => removeEducation(ed.id)}
-                title="Delete"
-              >
-                <Trash2 size={12} />
-              </Button>
+              {/* Reorder + delete */}
+              <div className="flex gap-0.5 shrink-0">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 hover:bg-slate-700 transition-colors duration-150 disabled:opacity-30"
+                  disabled={index === 0}
+                  onClick={() => reorderEducation(index, index - 1)}
+                  title="Move up"
+                >
+                  <ChevronUp size={12} />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 hover:bg-slate-700 transition-colors duration-150 disabled:opacity-30"
+                  disabled={index === cv.education.length - 1}
+                  onClick={() => reorderEducation(index, index + 1)}
+                  title="Move down"
+                >
+                  <ChevronDown size={12} />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-950/30 transition-colors duration-150"
+                  onClick={() => removeEducation(ed.id)}
+                  title="Delete"
+                >
+                  <Trash2 size={12} />
+                </Button>
+              </div>
             </div>
 
             {/* ── Expandable fields ── */}
@@ -97,7 +124,7 @@ export function EducationForm({
                       value={ed.period}
                       placeholder="Sep 2022 - Apr 2024"
                       onChange={(e) => updateEducation(ed.id, "period", e.target.value)}
-                      className="h-8 text-xs cursor-text"
+                      className="h-8 text-xs"
                     />
                   </div>
                   <div className="space-y-1">
@@ -106,7 +133,7 @@ export function EducationForm({
                       value={ed.degree}
                       placeholder="Master IA"
                       onChange={(e) => updateEducation(ed.id, "degree", e.target.value)}
-                      className="h-8 text-xs cursor-text"
+                      className="h-8 text-xs"
                     />
                   </div>
                 </div>
@@ -118,7 +145,7 @@ export function EducationForm({
                       value={ed.institution}
                       placeholder="Aivancity"
                       onChange={(e) => updateEducation(ed.id, "institution", e.target.value)}
-                      className="h-8 text-xs cursor-text"
+                      className="h-8 text-xs"
                     />
                   </div>
                   <div className="space-y-1">
@@ -127,7 +154,7 @@ export function EducationForm({
                       value={ed.location}
                       placeholder="Cachan (94), France"
                       onChange={(e) => updateEducation(ed.id, "location", e.target.value)}
-                      className="h-8 text-xs cursor-text"
+                      className="h-8 text-xs"
                     />
                   </div>
                 </div>
@@ -143,7 +170,7 @@ export function EducationForm({
                     rows={4}
                     value={ed.description ?? ""}
                     onChange={(e) => updateEducation(ed.id, "description", e.target.value)}
-                    className="resize-none text-xs font-mono cursor-text leading-relaxed"
+                    className="resize-none text-xs font-mono leading-relaxed"
                     placeholder={"5-year Grande Ecole program.\n- Data & AI\n- Law and Ethics"}
                   />
                 </div>

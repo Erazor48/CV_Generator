@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useRef } from "react";
-import type { CVData } from "@/types/cv";
-import { Label } from "@/components/ui/label";
+import { CVData } from "@/types/cv";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 
 interface PersonalFormProps {
@@ -29,108 +28,67 @@ export function PersonalForm({ cv, updateField, updateContact, setPhoto }: Perso
 
   return (
     <div className="space-y-5">
-      <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest">
-        Identity
-      </h3>
+      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Identité</h3>
 
       {/* Photo */}
       <div className="flex items-center gap-4">
         {cv.photo ? (
-          <Image
-            src={cv.photo}
-            alt="photo"
-            className="w-16 h-16 rounded-full object-cover border border-cyan-700"
-          />
+          <img src={cv.photo} alt="photo" className="w-14 h-14 rounded-full object-cover border border-cyan-700" />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-500 text-xs">
+          <div className="w-14 h-14 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-500 text-xs">
             No photo
           </div>
         )}
-        <div className="flex flex-col gap-1.5">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="text-xs"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload size={13} className="mr-1" /> Upload photo
+        <div className="flex flex-col gap-1">
+          <Button type="button" variant="outline" size="sm" className="text-xs hover:bg-slate-700 transition-colors duration-150" onClick={() => fileInputRef.current?.click()}>
+            <Upload size={12} className="mr-1" /> Photo
           </Button>
           {cv.photo && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-xs text-red-400"
-              onClick={() => setPhoto(undefined)}
-            >
-              <X size={13} className="mr-1" /> Remove
+            <Button type="button" variant="ghost" size="sm" className="text-xs text-red-400 hover:text-red-300 hover:bg-red-950/30 transition-colors duration-150" onClick={() => setPhoto(undefined)}>
+              <X size={12} className="mr-1" /> Retirer
             </Button>
           )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handlePhotoChange}
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
         </div>
       </div>
 
-      <Field label="Full name">
-        <Input value={cv.name} onChange={(e) => updateField("name", e.target.value)} />
+      <Field label="Nom complet">
+        <Input value={cv.name} onChange={(e) => updateField("name", e.target.value)} className="h-8 text-sm" />
+      </Field>
+      <Field label="Poste / Titre">
+        <Input value={cv.title} onChange={(e) => updateField("title", e.target.value)} className="h-8 text-sm" />
+      </Field>
+      <Field label="Disponibilité">
+        <Input value={cv.availability} onChange={(e) => updateField("availability", e.target.value)} className="h-8 text-sm" />
+      </Field>
+      <Field label="Accroche / Intro">
+        <Textarea rows={4} value={cv.intro} onChange={(e) => updateField("intro", e.target.value)} className="resize-none text-sm" />
       </Field>
 
-      <Field label="Position / Title">
-        <Input value={cv.title} onChange={(e) => updateField("title", e.target.value)} />
-      </Field>
-
-      <Field label="Availability">
-        <Input
-          value={cv.availability}
-          onChange={(e) => updateField("availability", e.target.value)}
-        />
-      </Field>
-
-      <Field label="Intro / Objective">
-        <Textarea
-          rows={4}
-          value={cv.intro}
-          onChange={(e) => updateField("intro", e.target.value)}
-          className="resize-none text-sm"
-        />
-      </Field>
-
-      <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest pt-2">
-        Contact
-      </h3>
+      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest pt-2">Contact</h3>
 
       {(
         [
-          ["email", "Email"],
-          ["phone", "Phone"],
-          ["location", "Location"],
-          ["linkedin", "LinkedIn"],
-          ["github", "GitHub"],
-          ["portfolio", "Portfolio / Website"],
+          ["email",     "Email"],
+          ["phone",     "Téléphone"],
+          ["location",  "Localisation"],
+          ["linkedin",  "LinkedIn"],
+          ["github",    "GitHub"],
+          ["portfolio", "Portfolio / Site"],
         ] as const
       ).map(([key, label]) => (
         <Field key={key} label={label}>
-          <Input
-            value={(cv.contact[key] as string) ?? ""}
-            onChange={(e) => updateContact(key, e.target.value)}
-          />
+          <Input value={(cv.contact[key] as string) ?? ""} onChange={(e) => updateContact(key, e.target.value)} className="h-8 text-xs" />
         </Field>
       ))}
     </div>
   );
 }
 
-// Small helper wrapper
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-slate-400">{label}</Label>
+    <div className="space-y-1">
+      <Label className="text-xs text-slate-500">{label}</Label>
       {children}
     </div>
   );

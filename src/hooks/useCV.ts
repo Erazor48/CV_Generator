@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import {
   CVData, CVOrientation,
   ExperienceItem, EducationItem,
-  Skill, Language, SectionTitles,
+  Language, SectionTitles,
 } from "@/types/cv";
 import { defaultCV } from "@/data/cv-default";
 
@@ -37,26 +37,13 @@ export function useCV() {
 
   // ── Experiences ────────────────────────────────────────────────────────────
   const addExperience = useCallback(() => {
-    const newExp: ExperienceItem = {
-      id: crypto.randomUUID(),
-      period: "",
-      title: "New Experience",
-      company: "",
-      location: "",
-      description: "",
-    };
+    const newExp: ExperienceItem = { id: crypto.randomUUID(), period: "", title: "New Experience", company: "", location: "", description: "" };
     setCV((prev) => ({ ...prev, experiences: [newExp, ...prev.experiences] }));
   }, []);
 
-  const updateExperience = useCallback(
-    (id: string, field: keyof ExperienceItem, value: string) => {
-      setCV((prev) => ({
-        ...prev,
-        experiences: prev.experiences.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-      }));
-    },
-    []
-  );
+  const updateExperience = useCallback((id: string, field: keyof ExperienceItem, value: string) => {
+    setCV((prev) => ({ ...prev, experiences: prev.experiences.map((e) => (e.id === id ? { ...e, [field]: value } : e)) }));
+  }, []);
 
   const removeExperience = useCallback((id: string) => {
     setCV((prev) => ({ ...prev, experiences: prev.experiences.filter((e) => e.id !== id) }));
@@ -73,41 +60,34 @@ export function useCV() {
 
   // ── Education ──────────────────────────────────────────────────────────────
   const addEducation = useCallback(() => {
-    const newEd: EducationItem = {
-      id: crypto.randomUUID(),
-      period: "",
-      degree: "New Degree",
-      institution: "",
-      location: "",
-      description: "",
-    };
+    const newEd: EducationItem = { id: crypto.randomUUID(), period: "", degree: "New Degree", institution: "", location: "", description: "" };
     setCV((prev) => ({ ...prev, education: [newEd, ...prev.education] }));
   }, []);
 
   const updateEducation = useCallback((id: string, field: keyof EducationItem, value: string) => {
-    setCV((prev) => ({
-      ...prev,
-      education: prev.education.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    }));
+    setCV((prev) => ({ ...prev, education: prev.education.map((e) => (e.id === id ? { ...e, [field]: value } : e)) }));
   }, []);
 
   const removeEducation = useCallback((id: string) => {
     setCV((prev) => ({ ...prev, education: prev.education.filter((e) => e.id !== id) }));
   }, []);
 
+  const reorderEducation = useCallback((from: number, to: number) => {
+    setCV((prev) => {
+      const arr = [...prev.education];
+      const [moved] = arr.splice(from, 1);
+      arr.splice(to, 0, moved);
+      return { ...prev, education: arr };
+    });
+  }, []);
+
   // ── Skills ─────────────────────────────────────────────────────────────────
   const addSkill = useCallback(() => {
-    setCV((prev) => ({
-      ...prev,
-      skills: [...prev.skills, { id: crypto.randomUUID(), label: "New Skill" }],
-    }));
+    setCV((prev) => ({ ...prev, skills: [...prev.skills, { id: crypto.randomUUID(), label: "New Skill" }] }));
   }, []);
 
   const updateSkill = useCallback((id: string, label: string) => {
-    setCV((prev) => ({
-      ...prev,
-      skills: prev.skills.map((s) => (s.id === id ? { ...s, label } : s)),
-    }));
+    setCV((prev) => ({ ...prev, skills: prev.skills.map((s) => (s.id === id ? { ...s, label } : s)) }));
   }, []);
 
   const removeSkill = useCallback((id: string) => {
@@ -116,17 +96,11 @@ export function useCV() {
 
   // ── Languages ─────────────────────────────────────────────────────────────
   const addLanguage = useCallback(() => {
-    setCV((prev) => ({
-      ...prev,
-      languages: [...prev.languages, { id: crypto.randomUUID(), name: "Language", level: "A1" }],
-    }));
+    setCV((prev) => ({ ...prev, languages: [...prev.languages, { id: crypto.randomUUID(), name: "Language", level: "A1" }] }));
   }, []);
 
   const updateLanguage = useCallback((id: string, field: keyof Language, value: string) => {
-    setCV((prev) => ({
-      ...prev,
-      languages: prev.languages.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
-    }));
+    setCV((prev) => ({ ...prev, languages: prev.languages.map((l) => (l.id === id ? { ...l, [field]: value } : l)) }));
   }, []);
 
   const removeLanguage = useCallback((id: string) => {
@@ -138,36 +112,19 @@ export function useCV() {
     setCV((prev) => ({ ...prev, photo: base64 }));
   }, []);
 
-  // ── Full replace (for JSON load) ──────────────────────────────────────────
-  const loadCV = useCallback((data: CVData) => {
-    setCV(data);
-  }, []);
-
+  // ── Full replace ──────────────────────────────────────────────────────────
+  const loadCV = useCallback((data: CVData) => { setCV(data); }, []);
   const resetCV = useCallback(() => setCV(defaultCV), []);
 
   return {
     cv,
-    updateField,
-    updateContact,
-    updateSectionTitle,
-    setSectionTitles,
-    setOrientation,
-    setTheme,
-    addExperience,
-    updateExperience,
-    removeExperience,
-    reorderExperiences,
-    addEducation,
-    updateEducation,
-    removeEducation,
-    addSkill,
-    updateSkill,
-    removeSkill,
-    addLanguage,
-    updateLanguage,
-    removeLanguage,
-    setPhoto,
-    loadCV,
-    resetCV,
+    updateField, updateContact,
+    updateSectionTitle, setSectionTitles,
+    setOrientation, setTheme,
+    addExperience, updateExperience, removeExperience, reorderExperiences,
+    addEducation, updateEducation, removeEducation, reorderEducation,
+    addSkill, updateSkill, removeSkill,
+    addLanguage, updateLanguage, removeLanguage,
+    setPhoto, loadCV, resetCV,
   };
 }

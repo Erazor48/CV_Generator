@@ -1,7 +1,7 @@
 import { CVData } from "@/types/cv";
 import { CVTheme } from "@/types/theme";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
-import { FaGithub, FaLinkedin } from "react-icons/fa"
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 interface CVSidebarProps {
   cv: CVData;
@@ -11,45 +11,24 @@ interface CVSidebarProps {
 export function CVSidebar({ cv, theme }: CVSidebarProps) {
   const { contact, skills, languages, intro, sectionTitles } = cv;
 
-  const sectionStyle = {
-    borderTopColor: theme.borderColor,
-  };
-
-  const accentBar = {
-    borderLeftColor: theme.accent,
-  };
+  const sectionStyle = { borderTopColor: theme.borderColor };
+  const accentBar    = { borderLeftColor: theme.accent };
 
   return (
     <aside
       className="flex flex-col"
-      style={{
-        backgroundColor: theme.sidebarBg,
-        color: theme.sidebarText,
-        width: "38%",
-        minWidth: "38%",
-      }}
+      style={{ backgroundColor: theme.sidebarBg, color: theme.sidebarText, width: "38%", minWidth: "38%" }}
     >
       {/* ── Intro blurb ── */}
       <div className="px-6 pt-7 pb-5">
-        <p
-          className="text-xs leading-relaxed italic"
-          style={{ color: theme.introText }}
-        >
+        <p className="text-xs leading-relaxed italic" style={{ color: theme.introText }}>
           {intro}
         </p>
       </div>
 
-      <div className="flex-1" />
-
       {/* ── Contact ── */}
-      <section
-        className="px-6 py-4 border-t"
-        style={sectionStyle}
-      >
-        <h3
-          className="text-sm font-bold mb-2.5 tracking-wide"
-          style={{ color: theme.sidebarText }}
-        >
+      <section className="px-6 py-4 border-t" style={sectionStyle}>
+        <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
           {sectionTitles.contact}
         </h3>
         <ul className="space-y-1.5 text-xs">
@@ -95,19 +74,12 @@ export function CVSidebar({ cv, theme }: CVSidebarProps) {
       {/* ── Skills ── */}
       {skills.length > 0 && (
         <section className="px-6 py-4 border-t" style={sectionStyle}>
-          <h3
-            className="text-sm font-bold mb-2.5 tracking-wide"
-            style={{ color: theme.sidebarText }}
-          >
+          <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
             {sectionTitles.skills}
           </h3>
           <ul className="space-y-1">
             {skills.map((s) => (
-              <li
-                key={s.id}
-                className="text-xs pl-2.5 border-l-2"
-                style={{ color: theme.sidebarMuted, ...accentBar }}
-              >
+              <li key={s.id} className="text-xs pl-2.5 border-l-2" style={{ color: theme.sidebarMuted, ...accentBar }}>
                 {s.label}
               </li>
             ))}
@@ -118,19 +90,12 @@ export function CVSidebar({ cv, theme }: CVSidebarProps) {
       {/* ── Languages ── */}
       {languages.length > 0 && (
         <section className="px-6 py-4 border-t" style={sectionStyle}>
-          <h3
-            className="text-sm font-bold mb-2.5 tracking-wide"
-            style={{ color: theme.sidebarText }}
-          >
+          <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
             {sectionTitles.languages}
           </h3>
           <ul className="space-y-1">
             {languages.map((l) => (
-              <li
-                key={l.id}
-                className="text-xs pl-2.5 border-l-2"
-                style={{ color: theme.sidebarMuted, ...accentBar }}
-              >
+              <li key={l.id} className="text-xs pl-2.5 border-l-2" style={{ color: theme.sidebarMuted, ...accentBar }}>
                 {l.name}{" "}
                 <span style={{ color: theme.sidebarMuted, opacity: 0.7 }}>({l.level})</span>
               </li>
