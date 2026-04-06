@@ -6,19 +6,20 @@ import { CVEditor } from "@/components/cv-editor/CVEditor";
 import { ProjectPanel } from "@/components/cv-editor/ProjectPanel";
 import { getThemeById } from "@/data/themes";
 
-/**
- * Layout: [ProjectPanel 180px] [Editor 360px] [Preview flex-1]
- *
- * useCVProjects handles:
- *   - Multiple CV projects stored in localStorage
- *   - Auto-save on every change (no manual save needed between sessions)
- *   - Active project tracking
- */
 export default function CVGeneratorPage() {
   const store = useCVProjects();
-  const { cv, projects, activeId, activeProject } = store;
+  const { cv, projects, activeId, activeProject, hydrated } = store;
   const theme = getThemeById(cv.themeId);
   const scale = cv.orientation === "portrait" ? 0.72 : 0.58;
+
+  // Don't render until localStorage is loaded — prevents SSR/CSR hydration mismatch
+  if (!hydrated) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#070f18]">
+        <span className="text-slate-600 text-sm">Chargement…</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#070f18]">
@@ -63,7 +64,6 @@ export default function CVGeneratorPage() {
           setSectionTitles={store.setSectionTitles}
           loadCV={store.loadCV}
           resetCV={store.resetCV}
-          // Pass project name for the PDF filename
           projectName={activeProject.name}
         />
       </div>
