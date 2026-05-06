@@ -44,3 +44,4 @@ next-env.d.ts
 /docs
 /public
 /src/data/cv-default.ts
+/src/data/cv-ai-research.ts

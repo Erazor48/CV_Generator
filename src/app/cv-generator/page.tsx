@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVProjects } from "@/hooks/useCVProjects";
+import { aiResearchCV } from "@/data/cv-ai-research";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv-editor/CVEditor";
 import { ProjectPanel } from "@/components/cv-editor/ProjectPanel";
@@ -68,6 +69,17 @@ export default function CVGeneratorPage() {
           addLanguage={store.addLanguage}
           updateLanguage={store.updateLanguage}
           removeLanguage={store.removeLanguage}
+          addExtraSection={store.addExtraSection}
+          updateExtraSectionTitle={store.updateExtraSectionTitle}
+          removeExtraSection={store.removeExtraSection}
+          addExtraItem={store.addExtraItem}
+          updateExtraItem={store.updateExtraItem}
+          removeExtraItem={store.removeExtraItem}
+          addProject={store.addProject}
+          updateProject={store.updateProject}
+          removeProject={store.removeProject}
+          reorderProjects={store.reorderProjects}
+          onCreateFromTemplate={() => store.createProjectFromTemplate("CV Stage IA 2026", aiResearchCV)}
           setTheme={store.setTheme}
           setOrientation={store.setOrientation}
           updateSectionTitle={store.updateSectionTitle}

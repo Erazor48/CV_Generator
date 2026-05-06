@@ -65,16 +65,16 @@ export function CVPreview({ cv, theme }: CVPreviewProps) {
         {/* Title block */}
         <div className="flex flex-col gap-0.5">
           <p
-            className="text-xl font-bold tracking-wide"
-            style={{ color: theme.headerText }}
-          >
-            {cv.title}
-          </p>
-          <p
             className="text-2xl font-extrabold"
             style={{ color: theme.headerText }}
           >
             {cv.name}
+          </p>
+          <p
+            className="text-xl font-bold tracking-wide"
+            style={{ color: theme.headerText }}
+          >
+            {cv.title}
           </p>
           <p
             className="text-xs mt-0.5"

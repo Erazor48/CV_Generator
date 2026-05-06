@@ -3,13 +3,14 @@
 import { useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Upload, RotateCcw, PanelLeftOpen, PanelLeftClose } from "lucide-react";
-import { CVData, ExperienceItem, EducationItem, SectionTitles } from "@/types/cv";
+import { Printer, Download, Upload, RotateCcw, PanelLeftOpen, PanelLeftClose, Sparkles } from "lucide-react";
+import { CVData, ExperienceItem, EducationItem, SectionTitles, ProjectItem } from "@/types/cv";
 import { PersonalForm } from "./PersonalForm";
 import { ExperienceForm } from "./ExperienceForm";
 import { EducationForm } from "./EducationForm";
 import { SkillsForm } from "./SkillsForm";
 import { ThemeForm } from "./ThemeForm";
+import { ProjectsForm } from "./ProjectsForm";
 import { printCV, saveJSON, loadJSON } from "@/lib/cv-export";
 
 
@@ -29,22 +30,33 @@ interface CVEditorProps {
   removeEducation: (id: string) => void;
   reorderEducation: (from: number, to: number) => void;
   addSkill: () => void;
-  updateSkill: (id: string, label: string) => void;
+  updateSkill: (id: string, field: "label" | "category", value: string) => void;
   removeSkill: (id: string) => void;
+  addExtraSection: () => void;
+  updateExtraSectionTitle: (sectionId: string, title: string) => void;
+  removeExtraSection: (sectionId: string) => void;
+  addExtraItem: (sectionId: string) => void;
+  updateExtraItem: (sectionId: string, itemId: string, field: "label" | "sublabel", value: string) => void;
+  removeExtraItem: (sectionId: string, itemId: string) => void;
   addLanguage: () => void;
   updateLanguage: (id: string, field: "name" | "level", value: string) => void;
   removeLanguage: (id: string) => void;
+  addProject: () => void;
+  updateProject: (id: string, field: keyof ProjectItem, value: string) => void;
+  removeProject: (id: string) => void;
+  reorderProjects: (from: number, to: number) => void;
   setTheme: (id: string) => void;
   setOrientation: (o: "portrait" | "landscape") => void;
   updateSectionTitle: (field: keyof SectionTitles, value: string) => void;
   setSectionTitles: (titles: SectionTitles) => void;
   loadCV: (data: CVData) => void;
   resetCV: () => void;
+  onCreateFromTemplate: () => void;
   projectName: string;
 }
 
 export function CVEditor(props: CVEditorProps) {
-  const { cv, resetCV, loadCV, projectName, sidebarOpen, onToggleSidebar } = props;
+  const { cv, resetCV, loadCV, projectName, sidebarOpen, onToggleSidebar, onCreateFromTemplate } = props;
   const slug = projectName.replace(/\s+/g, "-").toLowerCase();
   const jsonInputRef = useRef<HTMLInputElement>(null);
 
@@ -112,6 +124,18 @@ export function CVEditor(props: CVEditorProps) {
         </Button>
         <input ref={jsonInputRef} type="file" accept=".json" className="hidden" onChange={handleLoadJSON} />
 
+        {/* Template: Stage IA */}
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-7 px-2.5 text-xs text-cyan-400 border-cyan-800 hover:bg-cyan-950/40 hover:text-cyan-300 transition-colors duration-150"
+          title="Créer un nouveau CV depuis le template Stage IA"
+          onClick={onCreateFromTemplate}
+        >
+          <Sparkles size={11} className="mr-1" /> Stage IA
+        </Button>
+
         {/* Reset */}
         <Button
           type="button"
@@ -127,11 +151,12 @@ export function CVEditor(props: CVEditorProps) {
 
       {/* ── Tabs ── */}
       <Tabs defaultValue="personal" className="flex flex-col flex-1 overflow-hidden">
-        <TabsList className="shrink-0 mx-4 mt-3 mb-0 grid grid-cols-5 bg-slate-800/50">
+        <TabsList className="shrink-0 mx-4 mt-3 mb-0 grid grid-cols-6 bg-slate-800/50">
           <TabsTrigger value="personal"   className="text-xs cursor-pointer">Me</TabsTrigger>
           <TabsTrigger value="experience" className="text-xs cursor-pointer">Exp.</TabsTrigger>
           <TabsTrigger value="education"  className="text-xs cursor-pointer">Edu.</TabsTrigger>
           <TabsTrigger value="skills"     className="text-xs cursor-pointer">Skills</TabsTrigger>
+          <TabsTrigger value="projects"   className="text-xs cursor-pointer">Proj.</TabsTrigger>
           <TabsTrigger value="style"      className="text-xs cursor-pointer">Style</TabsTrigger>
         </TabsList>
 
@@ -146,7 +171,24 @@ export function CVEditor(props: CVEditorProps) {
             <EducationForm cv={cv} addEducation={props.addEducation} updateEducation={props.updateEducation} removeEducation={props.removeEducation} reorderEducation={props.reorderEducation} />
           </TabsContent>
           <TabsContent value="skills" className="mt-0">
-            <SkillsForm cv={cv} addSkill={props.addSkill} updateSkill={props.updateSkill} removeSkill={props.removeSkill} addLanguage={props.addLanguage} updateLanguage={props.updateLanguage} removeLanguage={props.removeLanguage} />
+            <SkillsForm
+              cv={cv}
+              addSkill={props.addSkill}
+              updateSkill={props.updateSkill}
+              removeSkill={props.removeSkill}
+              addLanguage={props.addLanguage}
+              updateLanguage={props.updateLanguage}
+              removeLanguage={props.removeLanguage}
+              addExtraSection={props.addExtraSection}
+              updateExtraSectionTitle={props.updateExtraSectionTitle}
+              removeExtraSection={props.removeExtraSection}
+              addExtraItem={props.addExtraItem}
+              updateExtraItem={props.updateExtraItem}
+              removeExtraItem={props.removeExtraItem}
+            />
+          </TabsContent>
+          <TabsContent value="projects" className="mt-0">
+            <ProjectsForm cv={cv} addProject={props.addProject} updateProject={props.updateProject} removeProject={props.removeProject} reorderProjects={props.reorderProjects} />
           </TabsContent>
           <TabsContent value="style" className="mt-0">
             <ThemeForm cv={cv} setTheme={props.setTheme} setOrientation={props.setOrientation} updateSectionTitle={props.updateSectionTitle} setSectionTitles={props.setSectionTitles} />

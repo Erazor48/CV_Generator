@@ -8,7 +8,7 @@ interface CVMainProps {
 }
 
 export function CVMain({ cv, theme }: CVMainProps) {
-  const { experiences, education, sectionTitles } = cv;
+  const { experiences, education, projects, sectionTitles } = cv;
 
   const headingStyle = {
     color: theme.sectionHeadingText,
@@ -27,7 +27,7 @@ export function CVMain({ cv, theme }: CVMainProps) {
       style={{ backgroundColor: theme.mainBg, color: theme.mainText }}
     >
       {/* ── Experiences ── */}
-      <section className="mb-6">
+      <section className="mb-4">
         <h2
           className="text-base font-bold tracking-widest mb-3 pb-1 border-b"
           style={headingStyle}
@@ -35,10 +35,10 @@ export function CVMain({ cv, theme }: CVMainProps) {
           {sectionTitles.experiences}
         </h2>
 
-        <div className="space-y-3.5">
+        <div className="space-y-2.5">
           {experiences.map((exp) => (
             <div key={exp.id}>
-              <div className="flex items-baseline gap-2 flex-wrap">
+              <div className="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap leading-none">
                 <span
                   className="text-xs font-semibold whitespace-nowrap"
                   style={{ color: theme.mainMuted }}
@@ -50,8 +50,8 @@ export function CVMain({ cv, theme }: CVMainProps) {
                 </span>
                 {exp.company && (
                   <span className="text-xs" style={{ color: theme.mainMuted }}>
-                    at {exp.company}
-                    {exp.location ? `, ${exp.location}` : ""}
+                    for {exp.company}
+                    {exp.location ? ` at ${exp.location}` : ""}
                   </span>
                 )}
               </div>
@@ -62,6 +62,48 @@ export function CVMain({ cv, theme }: CVMainProps) {
         </div>
       </section>
 
+      {/* ── Projects ── */}
+      {projects && projects.length > 0 && (
+        <section className="mb-4">
+          <h2
+            className="text-base font-bold tracking-widest mb-3 pb-1 border-b"
+            style={headingStyle}
+          >
+            {sectionTitles.projects ?? "Projects"}
+          </h2>
+
+          <div className="space-y-2.5">
+            {projects.map((proj) => (
+              <div key={proj.id}>
+                <div className="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap leading-none">
+                  {proj.period && (
+                    <span
+                      className="text-xs font-semibold whitespace-nowrap"
+                      style={{ color: theme.mainMuted }}
+                    >
+                      {proj.period}:
+                    </span>
+                  )}
+                  <span className="text-xs font-bold" style={{ color: theme.mainText }}>
+                    {proj.name}
+                  </span>
+                  {proj.url && (
+                    <span
+                      className="text-[0.65rem] font-mono"
+                      style={{ color: theme.mainMuted }}
+                    >
+                      {proj.url}
+                    </span>
+                  )}
+                </div>
+
+                {renderDescription(proj.description, descStyles)}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── Education ── */}
       <section>
         <h2
@@ -71,10 +113,10 @@ export function CVMain({ cv, theme }: CVMainProps) {
           {sectionTitles.education}
         </h2>
 
-        <div className="space-y-3.5">
+        <div className="space-y-2.5">
           {education.map((ed) => (
             <div key={ed.id}>
-              <div className="flex items-baseline gap-2 flex-wrap">
+              <div className="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap leading-none">
                 <span
                   className="text-xs font-semibold whitespace-nowrap"
                   style={{ color: theme.mainMuted }}

@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import {
   CVData, CVOrientation,
   ExperienceItem, EducationItem,
-  Language, SectionTitles,
+  Language, SectionTitles, ProjectItem,
+  ExtraSection,
 } from "@/types/cv";
 import { CVProject } from "@/types/project";
 import { defaultCV } from "@/data/cv-default";
@@ -102,6 +103,18 @@ export function useCVProjects() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       data: { ...defaultCV },
+    };
+    setProjects((prev) => [p, ...prev]);
+    setActiveId(p.id);
+  }, []);
+
+  const createProjectFromTemplate = useCallback((name: string, data: CVData) => {
+    const p: CVProject = {
+      id: crypto.randomUUID(),
+      name,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      data: JSON.parse(JSON.stringify(data)),
     };
     setProjects((prev) => [p, ...prev]);
     setActiveId(p.id);
@@ -222,16 +235,96 @@ export function useCVProjects() {
     });
   }, [patchCV]);
 
+  const addProject = useCallback(() => {
+    patchCV((prev) => ({
+      ...prev,
+      projects: [
+        { id: crypto.randomUUID(), name: "New Project", period: "", url: "", description: "" },
+        ...(prev.projects ?? []),
+      ],
+    }));
+  }, [patchCV]);
+
+  const updateProject = useCallback((id: string, field: keyof ProjectItem, value: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      projects: (prev.projects ?? []).map((p) => (p.id === id ? { ...p, [field]: value } : p)),
+    }));
+  }, [patchCV]);
+
+  const removeProject = useCallback((id: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      projects: (prev.projects ?? []).filter((p) => p.id !== id),
+    }));
+  }, [patchCV]);
+
+  const reorderProjects = useCallback((from: number, to: number) => {
+    patchCV((prev) => {
+      const arr = [...(prev.projects ?? [])];
+      const [m] = arr.splice(from, 1);
+      arr.splice(to, 0, m);
+      return { ...prev, projects: arr };
+    });
+  }, [patchCV]);
+
   const addSkill = useCallback(() => {
     patchCV((prev) => ({ ...prev, skills: [...prev.skills, { id: crypto.randomUUID(), label: "New Skill" }] }));
   }, [patchCV]);
 
-  const updateSkill = useCallback((id: string, label: string) => {
-    patchCV((prev) => ({ ...prev, skills: prev.skills.map((s) => (s.id === id ? { ...s, label } : s)) }));
+  const updateSkill = useCallback((id: string, field: "label" | "category", value: string) => {
+    patchCV((prev) => ({ ...prev, skills: prev.skills.map((s) => (s.id === id ? { ...s, [field]: value } : s)) }));
   }, [patchCV]);
 
   const removeSkill = useCallback((id: string) => {
     patchCV((prev) => ({ ...prev, skills: prev.skills.filter((s) => s.id !== id) }));
+  }, [patchCV]);
+
+  const addExtraSection = useCallback(() => {
+    const newSection: ExtraSection = { id: crypto.randomUUID(), title: "New Section", items: [] };
+    patchCV((prev) => ({ ...prev, extras: [...(prev.extras ?? []), newSection] }));
+  }, [patchCV]);
+
+  const updateExtraSectionTitle = useCallback((sectionId: string, title: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      extras: (prev.extras ?? []).map((s) => s.id === sectionId ? { ...s, title } : s),
+    }));
+  }, [patchCV]);
+
+  const removeExtraSection = useCallback((sectionId: string) => {
+    patchCV((prev) => ({ ...prev, extras: (prev.extras ?? []).filter((s) => s.id !== sectionId) }));
+  }, [patchCV]);
+
+  const addExtraItem = useCallback((sectionId: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      extras: (prev.extras ?? []).map((s) =>
+        s.id === sectionId
+          ? { ...s, items: [...s.items, { id: crypto.randomUUID(), label: "New item" }] }
+          : s
+      ),
+    }));
+  }, [patchCV]);
+
+  const updateExtraItem = useCallback((sectionId: string, itemId: string, field: "label" | "sublabel", value: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      extras: (prev.extras ?? []).map((s) =>
+        s.id === sectionId
+          ? { ...s, items: s.items.map((i) => i.id === itemId ? { ...i, [field]: value } : i) }
+          : s
+      ),
+    }));
+  }, [patchCV]);
+
+  const removeExtraItem = useCallback((sectionId: string, itemId: string) => {
+    patchCV((prev) => ({
+      ...prev,
+      extras: (prev.extras ?? []).map((s) =>
+        s.id === sectionId ? { ...s, items: s.items.filter((i) => i.id !== itemId) } : s
+      ),
+    }));
   }, [patchCV]);
 
   const addLanguage = useCallback(() => {
@@ -249,13 +342,16 @@ export function useCVProjects() {
   return {
     hydrated,
     projects, activeId, activeProject, cv,
-    createProject, duplicateProject, renameProject, deleteProject, switchProject,
+    createProject, createProjectFromTemplate, duplicateProject, renameProject, deleteProject, switchProject,
     loadCV, resetCV,
     updateField, updateContact, updateSectionTitle, setSectionTitles,
     setOrientation, setTheme, setPhoto,
     addExperience, updateExperience, removeExperience, reorderExperiences,
     addEducation, updateEducation, removeEducation, reorderEducation,
+    addProject, updateProject, removeProject, reorderProjects,
     addSkill, updateSkill, removeSkill,
     addLanguage, updateLanguage, removeLanguage,
+    addExtraSection, updateExtraSectionTitle, removeExtraSection,
+    addExtraItem, updateExtraItem, removeExtraItem,
   };
 }

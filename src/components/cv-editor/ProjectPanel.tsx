@@ -12,6 +12,7 @@ interface ProjectPanelProps {
   onDuplicate: (id: string) => void;
   onRename: (id: string, name: string) => void;
   onDelete: (id: string) => void;
+  onClose: () => void;
 }
 
 export function ProjectPanel({

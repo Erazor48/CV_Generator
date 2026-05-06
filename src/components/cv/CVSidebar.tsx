@@ -1,4 +1,4 @@
-import { CVData } from "@/types/cv";
+import { CVData, Skill } from "@/types/cv";
 import { CVTheme } from "@/types/theme";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
@@ -8,11 +8,22 @@ interface CVSidebarProps {
   theme: CVTheme;
 }
 
-export function CVSidebar({ cv, theme }: CVSidebarProps) {
-  const { contact, skills, languages, intro, sectionTitles } = cv;
+function groupSkillsByCategory(skills: Skill[]): { category: string; items: Skill[] }[] {
+  return skills.reduce((groups, s) => {
+    const cat = s.category ?? "";
+    const existing = groups.find((g) => g.category === cat);
+    if (existing) existing.items.push(s);
+    else groups.push({ category: cat, items: [s] });
+    return groups;
+  }, [] as { category: string; items: Skill[] }[]);
+}
 
-  const sectionStyle = { borderTopColor: theme.borderColor };
+export function CVSidebar({ cv, theme }: CVSidebarProps) {
+  const { contact, skills, languages, extras, intro, sectionTitles } = cv;
+
+  const sectionStyle = { borderTopWidth: "1px", borderTopStyle: "solid" as const, borderTopColor: theme.borderColor };
   const accentBar    = { borderLeftColor: theme.accent };
+  const hasCategories = skills.some((s) => s.category);
 
   return (
     <aside
@@ -20,14 +31,14 @@ export function CVSidebar({ cv, theme }: CVSidebarProps) {
       style={{ backgroundColor: theme.sidebarBg, color: theme.sidebarText, width: "38%", minWidth: "38%" }}
     >
       {/* ── Intro blurb ── */}
-      <div className="px-6 pt-7 pb-5">
+      <div className="px-6 pt-5 pb-3">
         <p className="text-xs leading-relaxed italic" style={{ color: theme.introText }}>
           {intro}
         </p>
       </div>
 
       {/* ── Contact ── */}
-      <section className="px-6 py-4 border-t" style={sectionStyle}>
+      <section className="px-6 py-3" style={sectionStyle}>
         <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
           {sectionTitles.contact}
         </h3>
@@ -73,23 +84,44 @@ export function CVSidebar({ cv, theme }: CVSidebarProps) {
 
       {/* ── Skills ── */}
       {skills.length > 0 && (
-        <section className="px-6 py-4 border-t" style={sectionStyle}>
+        <section className="px-6 py-3" style={sectionStyle}>
           <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
             {sectionTitles.skills}
           </h3>
-          <ul className="space-y-1">
-            {skills.map((s) => (
-              <li key={s.id} className="text-xs pl-2.5 border-l-2" style={{ color: theme.sidebarMuted, ...accentBar }}>
-                {s.label}
-              </li>
-            ))}
-          </ul>
+          {hasCategories ? (
+            <div className="space-y-1.5">
+              {groupSkillsByCategory(skills).map(({ category, items }) => (
+                <div key={category}>
+                  {category && (
+                    <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: theme.accent }}>
+                      {category}
+                    </p>
+                  )}
+                  <ul className="space-y-1">
+                    {items.map((s) => (
+                      <li key={s.id} className="text-xs pl-2.5 border-l-2" style={{ color: theme.sidebarMuted, ...accentBar }}>
+                        {s.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <ul className="space-y-1">
+              {skills.map((s) => (
+                <li key={s.id} className="text-xs pl-2.5 border-l-2" style={{ color: theme.sidebarMuted, ...accentBar }}>
+                  {s.label}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
 
       {/* ── Languages ── */}
       {languages.length > 0 && (
-        <section className="px-6 py-4 border-t" style={sectionStyle}>
+        <section className="px-6 py-3" style={sectionStyle}>
           <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
             {sectionTitles.languages}
           </h3>
@@ -103,6 +135,25 @@ export function CVSidebar({ cv, theme }: CVSidebarProps) {
           </ul>
         </section>
       )}
+
+      {/* ── Extras (Hackathons / Volunteer / Interests) ── */}
+      {extras && extras.map((section) => (
+        <section key={section.id} className="px-6 py-3" style={sectionStyle}>
+          <h3 className="text-sm font-bold mb-2.5 tracking-wide" style={{ color: theme.sidebarText }}>
+            {section.title}
+          </h3>
+          <ul className="space-y-1.5">
+            {section.items.map((item) => (
+              <li key={item.id} className="pl-2.5 border-l-2" style={{ ...accentBar }}>
+                <p className="text-xs" style={{ color: theme.sidebarMuted }}>{item.label}</p>
+                {item.sublabel && (
+                  <p className="text-[10px]" style={{ color: theme.sidebarMuted, opacity: 0.7 }}>{item.sublabel}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </aside>
   );
 }
