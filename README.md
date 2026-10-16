@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CV Generator
 
-## Getting Started
+A browser-based CV editor: fill in your details on the left, see the A4 CV update live on the right, then print it to PDF. Everything runs client-side; CVs are stored in your browser's `localStorage`.
 
-First, run the development server:
+## Features
+
+- Editor tabs for personal info, experience, education, skills, projects and style.
+- Live A4 preview in portrait or landscape.
+- Four built-in color themes (`dark-portfolio`, `professional-navy`, `minimal`, `classic-burgundy`).
+- Several CVs ("projects") with auto-save, rename, duplicate and delete.
+- Bullet points in descriptions: lines starting with `- `.
+- Export and import of a CV as a JSON file.
+- Print to PDF from a self-contained page (styles inlined) so the PDF matches the preview.
+
+## Run locally
+
+Requirements: [Bun](https://bun.sh) (or Node.js 20+).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>; it redirects to `/cv-generator`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts: `bun run build`, `bun run start`, `bun run lint`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Required local data files
 
-## Learn More
+The default CV data is personal and listed in `.gitignore`, but the code imports it. After cloning, create these two files or the build fails:
 
-To learn more about Next.js, take a look at the following resources:
+`src/data/cv-default.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```ts
+import { CVData } from "@/types/cv";
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+export const defaultCV: CVData = {
+  name: "Your Name",
+  title: "Your title",
+  availability: "",
+  intro: "",
+  contact: { email: "", phone: "", location: "" },
+  skills: [],
+  languages: [],
+  experiences: [],
+  education: [],
+  themeId: "professional-navy",
+  orientation: "portrait",
+  sectionTitles: {
+    contact: "Contact",
+    skills: "Skills",
+    languages: "Languages",
+    experiences: "Experience",
+    education: "Education",
+  },
+};
+```
 
-## Deploy on Vercel
+`src/data/cv-ai-research.ts` (a template offered by the "create from template" button)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```ts
+import { CVData } from "@/types/cv";
+import { defaultCV } from "./cv-default";
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+export const aiResearchCV: CVData = { ...defaultCV };
+```
+
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Radix UI primitives, lucide-react.
+
+## Project layout
+
+```
+src/app/cv-generator   page: editor + preview
+src/components/cv      CV preview (sidebar, main column)
+src/components/cv-editor   editor forms and CV project panel
+src/data/themes.ts     color themes
+src/hooks              useCV, useCVProjects (state + localStorage)
+src/lib/cv-export.ts   print to PDF, JSON save/load
+```
